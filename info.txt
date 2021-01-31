@@ -1,0 +1,16 @@
+
+# start development
+DEBUG=app:* DB_URI=mongodb://vidly_user:09876@localhost:27017/vidly VIDLY_JWT_PRIVATE_KEY=verySecret-verySecret NODE_ENV=development nodemon index.js
+
+# start production (run env-production.sh)
+node index.js
+
+# unit test
+npm test
+
+# integration test
+npm test -- --forceExit --detectOpenHandles
+
+App login: gians@gians.com:12345
+
+
