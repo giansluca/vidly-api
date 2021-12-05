@@ -5,11 +5,8 @@ const { Rental, validateRental } = require("../models/rental");
 const { Movie } = require("../models/movie");
 const { Customer } = require("../models/customer");
 const mongoose = require("mongoose");
-const Fawn = require("fawn");
 const express = require("express");
 const router = express.Router();
-
-Fawn.init(mongoose);
 
 router.get("/", async (req, res) => {
   const rentals = await Rental.find().sort("-dateOut");
@@ -46,16 +43,18 @@ router.post("/", [auth, validate(validateRental)], async (req, res) => {
     },
   });
 
-  new Fawn.Task()
-    .save("rentals", rental)
-    .update(
-      "movies",
-      { _id: movie._id },
-      {
-        $inc: { numberInStock: -1 },
-      }
-    )
-    .run();
+  await rental.save((err) => {
+    if (err) return res.status(400).send(`Rental validation failed...\n${err}...`);
+  });
+  movie.numberInStock--;
+
+  await movie.save((err) => {
+    if (err) {
+      const message = `Movie validation failed...\n${err}...\n`;
+      return res.status(400).send(`${message} Rental canceled...`);
+    }
+    return res.status(200).send(rental);
+  });
 
   res.send(rental);
 });

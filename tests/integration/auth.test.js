@@ -5,8 +5,8 @@ const { User } = require("../../models/user");
 describe("auth middleware", () => {
   let server;
 
-  beforeEach(() => {
-    server = require("../../index");
+  beforeEach(async () => {
+    server = await require("../../index");
   });
 
   afterEach(async () => {

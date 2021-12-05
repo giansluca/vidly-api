@@ -21,7 +21,7 @@ describe("/api/returns", () => {
   };
 
   beforeEach(async () => {
-    server = require("../../index");
+    server = await require("../../index");
 
     customerId = mongoose.Types.ObjectId();
     movieId = mongoose.Types.ObjectId();
