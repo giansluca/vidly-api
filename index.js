@@ -1,10 +1,7 @@
-const config = require("config");
-const debug = require("debug")("app:startup");
-const morgan = require("morgan");
-const express = require("express");
-const { logger, loggerSetUp } = require("./startup/logger");
+const config = require("./startup/config");
+const { logger } = require("./startup/logger");
 
-loggerSetUp();
+const express = require("express");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -13,21 +10,23 @@ app.use(express.static("public"));
 require("./startup/db")();
 require("./startup/cors")(app);
 require("./startup/routes")(app);
-require("./startup/config")();
 require("./startup/validation")();
-require("./startup/prod")(app);
 
-if (app.get("env") == "development") {
-  app.use(morgan("dev"));
-  debug(config.get("name"));
-  debug("Morgan enabled...");
+const env = config.env;
+logger.info(`Starting application on env ${env}`);
+
+if (env == "prod") {
+    const compression = require("compression");
+    const helmet = require("helmet");
+    app.use(helmet());
+    app.use(compression());
+
+    logger.info("Using helmet and compression");
 }
 
-// Server start
-const port = process.env.PORT || config.get("port");
+const port = config.http.PORT;
 const server = app.listen(port, () => {
-  logger.info(config.get("name"));
-  logger.info(`Listening on port ${port}...`);
+    logger.info(`Listening on port ${port}...`);
 });
 
 module.exports = server;

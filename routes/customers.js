@@ -7,51 +7,51 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const customers = await Customer.find().sort("name");
-  res.send(customers);
+    const customers = await Customer.find().sort("name");
+    res.send(customers);
 });
 
 router.get("/:id", validateObjectId, async (req, res) => {
-  const customer = await Customer.findById(req.params.id);
+    const customer = await Customer.findById(req.params.id);
 
-  if (!customer) return res.status(404).send("The customer with the given ID was not found");
+    if (!customer) return res.status(404).send("The customer with the given ID was not found");
 
-  res.send(customer);
+    res.send(customer);
 });
 
 router.post("/", [auth, validate(validateCustomer)], async (req, res) => {
-  const customer = new Customer({
-    name: req.body.name,
-    phone: req.body.phone,
-    isGold: req.body.isGold,
-  });
+    const customer = new Customer({
+        name: req.body.name,
+        phone: req.body.phone,
+        isGold: req.body.isGold,
+    });
 
-  await customer.save();
-  res.send(customer);
+    await customer.save();
+    res.send(customer);
 });
 
 router.put("/:id", [auth, validateObjectId, validate(validateCustomer)], async (req, res) => {
-  const customer = await Customer.findByIdAndUpdate(
-    req.params.id,
-    {
-      name: req.body.name,
-      phone: req.body.phone,
-      isGold: req.body.isGold,
-    },
-    { new: true }
-  );
+    const customer = await Customer.findByIdAndUpdate(
+        req.params.id,
+        {
+            name: req.body.name,
+            phone: req.body.phone,
+            isGold: req.body.isGold,
+        },
+        { new: true }
+    );
 
-  if (!customer) return res.status(404).send("The customer with the given ID was not found");
+    if (!customer) return res.status(404).send("The customer with the given ID was not found");
 
-  res.send(customer);
+    res.send(customer);
 });
 
 router.delete("/:id", [auth, validateObjectId, admin], async (req, res) => {
-  const customer = await Customer.findByIdAndRemove(req.params.id);
+    const customer = await Customer.findByIdAndRemove(req.params.id);
 
-  if (!customer) return res.status(404).send("The customer with the given ID was not found");
+    if (!customer) return res.status(404).send("The customer with the given ID was not found");
 
-  res.send(customer);
+    res.send(customer);
 });
 
 module.exports = router;

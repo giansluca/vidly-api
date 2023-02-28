@@ -8,12 +8,12 @@ const returnsRouter = require("../routes/returns");
 const error = require("../middleware/error");
 
 module.exports = function (app) {
-  app.use("/api/genres", genresRouter);
-  app.use("/api/customers", customersRouter);
-  app.use("/api/movies", moviesRouter);
-  app.use("/api/rentals", rentalsRouter);
-  app.use("/api/users", usersRouter);
-  app.use("/api/auth", authRouter);
-  app.use("/api/returns", returnsRouter);
-  app.use(error);
+    app.use("/api/genres", genresRouter);
+    app.use("/api/customers", customersRouter);
+    app.use("/api/movies", moviesRouter);
+    app.use("/api/rentals", rentalsRouter);
+    app.use("/api/users", usersRouter);
+    app.use("/api/auth", authRouter);
+    app.use("/api/returns", returnsRouter);
+    app.use(error);
 };
