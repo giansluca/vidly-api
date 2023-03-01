@@ -1,6 +1,6 @@
 const { User } = require("../models/user");
 const validate = require("../middleware/validate");
-const Joi = require("@hapi/joi");
+const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
 const express = require("express");

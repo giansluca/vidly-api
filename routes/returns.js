@@ -3,7 +3,7 @@ const { Movie } = require("../models/movie");
 const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
 const mongoose = require("mongoose");
-const Joi = require("@hapi/joi");
+const Joi = require("joi");
 const express = require("express");
 const router = express.Router();
 
@@ -16,26 +16,7 @@ router.post("/", [auth, validate(validateReturn)], async (req, res) => {
 
     rental.return();
 
-    // Transactions work so far only on mongo replica set
-    /*
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    await rental.save({ session });
-    await Movie.update({ _id: rental.movie._id }, { $inc: {numberInStock: 1} }, { session });
-    
-    await session.commitTransaction();
-    
-  } catch (error) {
-    await session.abortTransaction();
-    throw error;
-  } finally {
-    session.endSession();
-  }
-  */
-
     await rental.save();
-
     await Movie.updateOne({ _id: rental.movie._id }, { $inc: { numberInStock: 1 } });
 
     return res.send(rental);

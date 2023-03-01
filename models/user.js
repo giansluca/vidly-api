@@ -1,6 +1,6 @@
 const config = require("../startup/config");
 const mongoose = require("mongoose");
-const Joi = require("@hapi/joi");
+const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({

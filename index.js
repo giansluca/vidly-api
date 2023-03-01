@@ -1,19 +1,14 @@
 const config = require("./startup/config");
 const { logger } = require("./startup/logger");
 
+const env = config.env;
+logger.info(`Starting application on env ${env}`);
+
 const express = require("express");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
-require("./startup/db")();
-require("./startup/cors")(app);
-require("./startup/routes")(app);
-require("./startup/validation")();
-
-const env = config.env;
-logger.info(`Starting application on env ${env}`);
 
 if (env == "prod") {
     const compression = require("compression");
@@ -23,6 +18,11 @@ if (env == "prod") {
 
     logger.info("Using helmet and compression");
 }
+
+require("./startup/db")();
+require("./startup/cors")(app);
+require("./startup/routes")(app);
+require("./startup/validation")();
 
 const port = config.http.PORT;
 const server = app.listen(port, () => {
