@@ -1,6 +1,0 @@
-{
-  "name": "Vidly App Test",
-  "jwtPrivateKey": "12345",
-  "dbUri": "mongodb://localhost:27017/vidly_test",
-  "port": 3900
-}
