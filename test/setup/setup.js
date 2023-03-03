@@ -7,7 +7,7 @@ module.exports = async () => {
 const startMongoDb = async () => {
     const mongoDb = await mongoDbStart();
 
-    process.env.MONGO_URL = `${mongoDb.getConnectionString()}/vidly-api`;
+    process.env.MONGO_URL = `${mongoDb.getConnectionString()}/vidly-api?directConnection=true`;
     global._mongoDb = mongoDb;
 
     console.log("MongoDb started");

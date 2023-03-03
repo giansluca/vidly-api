@@ -6,8 +6,4 @@ const mongoDbStart = async () => {
     return mongoDb;
 };
 
-const getMongoDbClient = () => {
-    return null;
-};
-
-module.exports = { mongoDbStart, getMongoDbClient };
+module.exports = { mongoDbStart };
