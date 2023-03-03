@@ -17,7 +17,7 @@ describe.skip("auth middleware", () => {
     let token;
 
     const exec = () => {
-        return request(server).post("/api/genres").set("x-auth-token", token).send({ name: "genre1" });
+        return request(server).post("/api/genres").set("Authorization", token).send({ name: "genre1" });
     };
 
     beforeEach(() => {

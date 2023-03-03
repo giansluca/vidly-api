@@ -57,7 +57,7 @@ describe.skip("/api/genres", () => {
         let name;
 
         const exec = async () => {
-            return await request(server).post("/api/genres").set("x-auth-token", token).send({ name: name });
+            return await request(server).post("/api/genres").set("Authorization", token).send({ name: name });
         };
 
         beforeEach(() => {

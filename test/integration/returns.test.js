@@ -16,7 +16,7 @@ describe.skip("/api/returns", () => {
     const exec = async () => {
         return request(server)
             .post("/api/returns")
-            .set("x-auth-token", token)
+            .set("Authorization", token)
             .send({ customerId: customerId, movieId: movieId });
     };
 
