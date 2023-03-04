@@ -1,3 +1,4 @@
 
-testcontainer
+api test : customers - users - auth
+bearer + expiration time
 mongo transaction

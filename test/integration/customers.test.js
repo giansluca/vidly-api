@@ -4,10 +4,11 @@ const { Customer } = require("../../src/models/customer");
 const { User } = require("../../src/models/user");
 
 let server;
+let insertedIds;
 
 beforeAll(async () => {
     server = await require("../../index");
-    await setUpInitData();
+    insertedIds = await setUpInitData();
 
     console.log(new User().generateAuthToken());
 });
@@ -21,9 +22,11 @@ afterAll(async () => {
 describe("/api/customers", () => {
     describe("GET /", () => {
         it("should return all the customers", async () => {
+            // Given - When
             const res = await request(server).get("/api/customers");
-            expect(res.status).toBe(200);
 
+            // Then
+            expect(res.status).toBe(200);
             expect(res.body.length).toBe(4);
             expect(
                 res.body.some((c) => c.name === "Pablo Bomb" && c.phone === "12345" && c.isGold === true)
@@ -31,15 +34,34 @@ describe("/api/customers", () => {
             expect(res.body.some((c) => c.name === "Zio Tom" && c.isGold === false)).toBeTruthy();
         });
     });
+
+    describe("GET /:id", () => {
+        it("should get customer by id", async () => {
+            // Given
+            const customerId1 = insertedIds["0"].toString();
+
+            // When
+            const res = await request(server).get(`/api/customers/${customerId1}`);
+
+            // Then
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty("id", customerId1);
+            expect(res.body).toHaveProperty("name", "Pablo Bomb");
+            expect(res.body).toHaveProperty("phone", "12345");
+            expect(res.body).toHaveProperty("isGold", true);
+        });
+    });
 });
 
 const setUpInitData = async () => {
-    await Customer.collection.insertMany([
+    const result = await Customer.collection.insertMany([
         { name: "Pablo Bomb", phone: "12345", isGold: true },
         { name: "Zio Tom", phone: "098765" },
         { name: "Peter Zum", phone: "000001" },
         { name: "Tom The Hero", phone: "112301", isGold: true },
     ]);
+
+    return result.insertedIds;
 };
 
 const clearData = async () => {
