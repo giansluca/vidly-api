@@ -5,12 +5,14 @@ const env = config.env;
 logger.info(`Starting application on env -> ${env}`);
 
 const express = require("express");
+const cors = require("cors");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(cors());
 
-if (env == "prod") {
+if (env != "local") {
     const compression = require("compression");
     const helmet = require("helmet");
     app.use(helmet());
@@ -20,7 +22,6 @@ if (env == "prod") {
 }
 
 require("./src/startup/db")();
-require("./src/startup/cors")(app);
 require("./src/startup/routes")(app);
 
 const port = config.http.PORT;

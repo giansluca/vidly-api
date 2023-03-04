@@ -1,26 +1,38 @@
+const { logger } = require("../startup/logger");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const validate = require("../middleware/validate");
+const objectId = require("../middleware/objectId");
 const { Customer, validateCustomer } = require("../models/customer");
 const express = require("express");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-    const customers = await Customer.find().sort("name");
+    try {
+        const customers = await Customer.find().sort("name");
 
-    customerListRes = customers.map((c) => {
-        return { id: c._id, name: c.name, phone: c.phone, isGold: c.isGold };
-    });
-
-    res.send(customerListRes);
+        customerListRes = customers.map((c) => {
+            return { id: c._id, name: c.name, phone: c.phone, isGold: c.isGold };
+        });
+        res.send(customerListRes);
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send(err);
+    }
 });
 
-router.get("/:id", async (req, res) => {
-    const customer = await Customer.findById(req.params.id);
-    if (!customer) return res.status(404).send("The customer with the given ID was not found");
+router.get("/:id", [objectId], async (req, res) => {
+    try {
+        const id = req.params.id;
+        const customer = await Customer.findById(id);
+        if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
 
-    const customerRes = { id: customer._id, name: customer.name, phone: customer.phone, isGold: customer.isGold };
-    res.send(customerRes);
+        const customerRes = { id: customer._id, name: customer.name, phone: customer.phone, isGold: customer.isGold };
+        res.send(customerRes);
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send(err);
+    }
 });
 
 router.post("/", [auth, validate(validateCustomer)], async (req, res) => {

@@ -50,6 +50,17 @@ describe("/api/customers", () => {
             expect(res.body).toHaveProperty("phone", "12345");
             expect(res.body).toHaveProperty("isGold", true);
         });
+        it("should return 404 if no customer with the given id exists", async () => {
+            // Given
+            const randomId = new mongoose.Types.ObjectId().toString();
+
+            // When
+            const res = await request(server).get(`/api/customers/${randomId}`);
+
+            // Then
+            expect(res.status).toBe(404);
+            expect(res.text).toBe(`Customer with id: ${randomId} was not found`);
+        });
     });
 });
 
