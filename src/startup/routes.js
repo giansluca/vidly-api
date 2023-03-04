@@ -13,7 +13,6 @@ module.exports = function (app) {
     app.use("/api/movies", moviesRouter);
     app.use("/api/rentals", rentalsRouter);
     app.use("/api/users", usersRouter);
-    app.use("/api/auth", authRouter);
     app.use("/api/returns", returnsRouter);
-    app.use(error);
+    //app.use(error);
 };
