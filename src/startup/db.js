@@ -7,6 +7,6 @@ module.exports = () => {
 
     mongoose.connect(dbUrl).then(
         () => logger.info(`Connected to -> ${dbUrl}`),
-        (err) => logger.error("Error connecting to database")
+        (err) => logger.error("Error connecting to database", err)
     );
 };
