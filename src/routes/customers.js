@@ -44,7 +44,7 @@ router.post("/", [auth, validate(validateCustomer)], async (req, res) => {
         });
 
         await customer.save();
-        res.send(customer._id);
+        res.status(201).send(customer._id);
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);

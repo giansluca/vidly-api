@@ -29,7 +29,7 @@ describe("/api/customers", () => {
             expect(res.status).toBe(200);
             expect(res.body.length).toBe(4);
             expect(
-                res.body.some((c) => c.name === "Pablo Bomb" && c.phone === "12345" && c.isGold === true)
+                res.body.some((c) => c.name === "Pablo Bomb" && c.phone === "123456" && c.isGold === true)
             ).toBeTruthy();
             expect(res.body.some((c) => c.name === "Zio Tom" && c.isGold === false)).toBeTruthy();
         });
@@ -57,7 +57,7 @@ describe("/api/customers", () => {
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty("id", customerId1);
             expect(res.body).toHaveProperty("name", "Pablo Bomb");
-            expect(res.body).toHaveProperty("phone", "12345");
+            expect(res.body).toHaveProperty("phone", "123456");
             expect(res.body).toHaveProperty("isGold", true);
         });
         it("should return 404 if no customer with the given id exists", async () => {
@@ -94,11 +94,38 @@ describe("/api/customers", () => {
             expect(res.status).toBe(401);
         });
     });
+
+    describe("POST /:id", () => {
+        it("should save new customer", async () => {
+            // Given
+            const newCustomer = {
+                name: "Pablo the painter",
+                phone: "0000001",
+                isGold: true,
+            };
+
+            //When
+            const resPost = await request(server)
+                .post("/api/customers")
+                .set("Authorization", jwtToken)
+                .send(newCustomer);
+            const idCreated = resPost.body;
+
+            const resGet = await request(server).get(`/api/customers/${idCreated}`).set("Authorization", jwtToken);
+
+            // Then
+            expect(resPost.status).toBe(201);
+            expect(resGet.status).toBe(200);
+            expect(resGet.body).toHaveProperty("name", "Pablo the painter");
+            expect(resGet.body).toHaveProperty("phone", "0000001");
+            expect(resGet.body).toHaveProperty("isGold", true);
+        });
+    });
 });
 
 const setUpInitData = async () => {
     const result = await Customer.collection.insertMany([
-        { name: "Pablo Bomb", phone: "12345", isGold: true },
+        { name: "Pablo Bomb", phone: "123456", isGold: true },
         { name: "Zio Tom", phone: "098765" },
         { name: "Peter Zum", phone: "000001" },
         { name: "Tom The Hero", phone: "112301", isGold: true },
