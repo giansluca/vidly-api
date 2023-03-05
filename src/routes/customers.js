@@ -7,7 +7,7 @@ const { Customer, validateCustomer } = require("../models/customer");
 const express = require("express");
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", [auth], async (req, res) => {
     try {
         const customers = await Customer.find().sort("name");
 
@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-router.get("/:id", [objectId], async (req, res) => {
+router.get("/:id", [auth, objectId], async (req, res) => {
     try {
         const id = req.params.id;
         const customer = await Customer.findById(id);
@@ -36,14 +36,19 @@ router.get("/:id", [objectId], async (req, res) => {
 });
 
 router.post("/", [auth, validate(validateCustomer)], async (req, res) => {
-    const customer = new Customer({
-        name: req.body.name,
-        phone: req.body.phone,
-        isGold: req.body.isGold,
-    });
+    try {
+        const customer = new Customer({
+            name: req.body.name,
+            phone: req.body.phone,
+            isGold: req.body.isGold,
+        });
 
-    await customer.save();
-    res.send(customer);
+        await customer.save();
+        res.send(customer._id);
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send(err);
+    }
 });
 
 router.put("/:id", [auth, validate(validateCustomer)], async (req, res) => {

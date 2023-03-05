@@ -3,7 +3,6 @@ const moviesRouter = require("../routes/movies");
 const customersRouter = require("../routes/customers");
 const rentalsRouter = require("../routes/rentals");
 const usersRouter = require("../routes/users");
-const authRouter = require("../routes/auth");
 const returnsRouter = require("../routes/returns");
 const error = require("../middleware/error");
 

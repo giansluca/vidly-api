@@ -5,12 +5,12 @@ const { User } = require("../../src/models/user");
 
 let server;
 let insertedIds;
+let jwtToken;
 
 beforeAll(async () => {
     server = await require("../../index");
     insertedIds = await setUpInitData();
-
-    console.log(new User().generateAuthToken());
+    jwtToken = new User({ name: "name", email: "email", password: "password", isAdmin: false }).generateAuthToken();
 });
 
 afterAll(async () => {
@@ -23,7 +23,7 @@ describe("/api/customers", () => {
     describe("GET /", () => {
         it("should return all the customers", async () => {
             // Given - When
-            const res = await request(server).get("/api/customers");
+            const res = await request(server).get("/api/customers").set("Authorization", jwtToken);
 
             // Then
             expect(res.status).toBe(200);
@@ -33,6 +33,16 @@ describe("/api/customers", () => {
             ).toBeTruthy();
             expect(res.body.some((c) => c.name === "Zio Tom" && c.isGold === false)).toBeTruthy();
         });
+        it("should return 401 if client is not logged in", async () => {
+            // Given
+            noToken = "";
+
+            // When
+            const res = await request(server).get("/api/customers").set("Authorization", noToken);
+
+            // Then
+            expect(res.status).toBe(401);
+        });
     });
 
     describe("GET /:id", () => {
@@ -41,7 +51,7 @@ describe("/api/customers", () => {
             const customerId1 = insertedIds["0"].toString();
 
             // When
-            const res = await request(server).get(`/api/customers/${customerId1}`);
+            const res = await request(server).get(`/api/customers/${customerId1}`).set("Authorization", jwtToken);
 
             // Then
             expect(res.status).toBe(200);
@@ -55,11 +65,33 @@ describe("/api/customers", () => {
             const randomId = new mongoose.Types.ObjectId().toString();
 
             // When
-            const res = await request(server).get(`/api/customers/${randomId}`);
+            const res = await request(server).get(`/api/customers/${randomId}`).set("Authorization", jwtToken);
 
             // Then
             expect(res.status).toBe(404);
             expect(res.text).toBe(`Customer with id: ${randomId} was not found`);
+        });
+        it("should return 400 if customerId is invalid", async () => {
+            // Given
+            const customerId = "1AAA";
+
+            // When
+            const res = await request(server).get(`/api/customers/${customerId}`).set("Authorization", jwtToken);
+
+            // Then
+            expect(res.status).toBe(400);
+            expect(res.text).toBe(`Invalid id: ${customerId}`);
+        });
+        it("should return 401 if client is not logged in", async () => {
+            // Given
+            noToken = "";
+            const customerId1 = insertedIds["0"].toString();
+
+            // When
+            const res = await request(server).get(`/api/customers/${customerId1}`).set("Authorization", noToken);
+
+            // Then
+            expect(res.status).toBe(401);
         });
     });
 });
