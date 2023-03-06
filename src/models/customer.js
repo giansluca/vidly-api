@@ -7,18 +7,18 @@ const Customer = mongoose.model(
         name: {
             type: String,
             required: true,
-            minlength: 6,
-            maxlength: 64,
+            minLength: 6,
+            maxLength: 64,
         },
         phone: {
             type: String,
             required: true,
-            minlength: 6,
-            maxlength: 24,
+            minLength: 6,
+            maxLength: 24,
         },
         isGold: {
             type: Boolean,
-            default: false,
+            required: true,
         },
     })
 );

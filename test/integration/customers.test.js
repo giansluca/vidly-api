@@ -4,12 +4,12 @@ const { Customer } = require("../../src/models/customer");
 const { User } = require("../../src/models/user");
 
 let server;
-let insertedIds;
+let insertedCustomer;
 let jwtToken;
 
 beforeAll(async () => {
     server = await require("../../index");
-    insertedIds = await setUpInitData();
+    insertedCustomer = await setUpInitData();
     jwtToken = new User({ name: "name", email: "email", password: "password", isAdmin: false }).generateAuthToken();
 });
 
@@ -48,7 +48,7 @@ describe("/api/customers", () => {
     describe("GET /:id", () => {
         it("should get customer by id", async () => {
             // Given
-            const customerId1 = insertedIds["0"].toString();
+            const customerId1 = insertedCustomer["0"]._id.toString();
 
             // When
             const res = await request(server).get(`/api/customers/${customerId1}`).set("Authorization", jwtToken);
@@ -85,7 +85,7 @@ describe("/api/customers", () => {
         it("should return 401 if client is not logged in", async () => {
             // Given
             noToken = "";
-            const customerId1 = insertedIds["0"].toString();
+            const customerId1 = insertedCustomer["0"]._id.toString();
 
             // When
             const res = await request(server).get(`/api/customers/${customerId1}`).set("Authorization", noToken);
@@ -100,7 +100,7 @@ describe("/api/customers", () => {
             // Given
             const newCustomer = {
                 name: "Pablo the painter",
-                phone: "0000001",
+                phone: "0000099",
                 isGold: true,
             };
 
@@ -117,7 +117,31 @@ describe("/api/customers", () => {
             expect(resPost.status).toBe(201);
             expect(resGet.status).toBe(200);
             expect(resGet.body).toHaveProperty("name", "Pablo the painter");
-            expect(resGet.body).toHaveProperty("phone", "0000001");
+            expect(resGet.body).toHaveProperty("phone", "0000099");
+            expect(resGet.body).toHaveProperty("isGold", true);
+        });
+        it("should return 400 if mandatory customer parameter is missing", async () => {
+            // Given
+            const newCustomer = {
+                name: "Pablo the painter",
+                phone: "0000099",
+                isGold: true,
+            };
+
+            //When
+            const resPost = await request(server)
+                .post("/api/customers")
+                .set("Authorization", jwtToken)
+                .send(newCustomer);
+            const idCreated = resPost.body;
+
+            const resGet = await request(server).get(`/api/customers/${idCreated}`).set("Authorization", jwtToken);
+
+            // Then
+            expect(resPost.status).toBe(201);
+            expect(resGet.status).toBe(200);
+            expect(resGet.body).toHaveProperty("name", "Pablo the painter");
+            expect(resGet.body).toHaveProperty("phone", "0000099");
             expect(resGet.body).toHaveProperty("isGold", true);
         });
     });
@@ -125,14 +149,13 @@ describe("/api/customers", () => {
 
 const setUpInitData = async () => {
     const customers = [
-        { name: "Pablo Bomb", phone: "123456", isGold: true },
-        { name: "Zio Tom", phone: "098765" },
-        { name: "Peter Zum", phone: "00001" },
-        { name: "Tom The Hero", phone: "112301", isGold: true },
+        new Customer({ name: "Pablo Bomb", phone: "123456", isGold: true }),
+        new Customer({ name: "Zio Tom", phone: "098765", isGold: false }),
+        new Customer({ name: "Peter Zum", phone: "000001", isGold: false }),
+        new Customer({ name: "Tom The Hero", phone: "112301", isGold: true }),
     ];
 
-    const result = await Customer.collection.insertMany(customers);
-    return result.insertedIds;
+    return await Customer.insertMany(customers);
 };
 
 const clearData = async () => {

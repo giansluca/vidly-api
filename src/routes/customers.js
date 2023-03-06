@@ -35,7 +35,7 @@ router.get("/:id", [auth, objectId], async (req, res) => {
     }
 });
 
-router.post("/", [auth, validate(validateCustomer)], async (req, res) => {
+router.post("/", [auth, admin, validate(validateCustomer)], async (req, res) => {
     try {
         const customer = new Customer({
             name: req.body.name,
@@ -51,26 +51,33 @@ router.post("/", [auth, validate(validateCustomer)], async (req, res) => {
     }
 });
 
-router.put("/:id", [auth, validate(validateCustomer)], async (req, res) => {
-    const customer = await Customer.findByIdAndUpdate(
-        req.params.id,
-        {
-            name: req.body.name,
-            phone: req.body.phone,
-            isGold: req.body.isGold,
-        },
-        { new: true }
-    );
+router.put("/:id", [auth, admin, validate(validateCustomer)], async (req, res) => {
+    try {
+        const id = req.params.id;
+        const customer = await Customer.findByIdAndUpdate(
+            id,
+            {
+                name: req.body.name,
+                phone: req.body.phone,
+                isGold: req.body.isGold,
+            },
+            { new: true }
+        );
 
-    if (!customer) return res.status(404).send("The customer with the given ID was not found");
+        if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
 
-    res.send(customer);
+        res.send(customer);
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send(err);
+    }
 });
 
 router.delete("/:id", [auth, admin], async (req, res) => {
-    const customer = await Customer.findByIdAndRemove(req.params.id);
+    const id = req.params.id;
+    const customer = await Customer.findByIdAndRemove(id);
 
-    if (!customer) return res.status(404).send("The customer with the given ID was not found");
+    if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
 
     res.send(customer);
 });

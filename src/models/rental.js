@@ -8,8 +8,8 @@ const rentalSchema = new mongoose.Schema({
             name: {
                 type: String,
                 required: true,
-                minlength: 6,
-                maxlength: 64,
+                minLength: 6,
+                maxLength: 64,
             },
             isGold: {
                 type: Boolean,
@@ -18,8 +18,8 @@ const rentalSchema = new mongoose.Schema({
             phone: {
                 type: String,
                 required: true,
-                minlength: 6,
-                maxlength: 24,
+                minLength: 6,
+                maxLength: 24,
             },
         }),
         required: true,
@@ -30,8 +30,8 @@ const rentalSchema = new mongoose.Schema({
                 type: String,
                 required: true,
                 trim: true,
-                minlength: 6,
-                maxlength: 256,
+                minLength: 6,
+                maxLength: 256,
             },
             dailyRentalRate: {
                 type: Number,
