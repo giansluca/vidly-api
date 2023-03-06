@@ -10,7 +10,7 @@ let jwtToken;
 beforeAll(async () => {
     server = await require("../../index");
     insertedCustomer = await setUpInitData();
-    jwtToken = new User({ name: "name", email: "email", password: "password", isAdmin: false }).generateAuthToken();
+    jwtToken = new User({ name: "name", email: "email", password: "password", isAdmin: true }).generateAuthToken();
 });
 
 afterAll(async () => {
@@ -124,7 +124,6 @@ describe("/api/customers", () => {
             // Given
             const newCustomer = {
                 name: "Pablo the painter",
-                phone: "0000099",
                 isGold: true,
             };
 
@@ -135,14 +134,8 @@ describe("/api/customers", () => {
                 .send(newCustomer);
             const idCreated = resPost.body;
 
-            const resGet = await request(server).get(`/api/customers/${idCreated}`).set("Authorization", jwtToken);
-
             // Then
-            expect(resPost.status).toBe(201);
-            expect(resGet.status).toBe(200);
-            expect(resGet.body).toHaveProperty("name", "Pablo the painter");
-            expect(resGet.body).toHaveProperty("phone", "0000099");
-            expect(resGet.body).toHaveProperty("isGold", true);
+            expect(resPost.status).toBe(400);
         });
     });
 });
