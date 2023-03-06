@@ -124,13 +124,14 @@ describe("/api/customers", () => {
 });
 
 const setUpInitData = async () => {
-    const result = await Customer.collection.insertMany([
+    const customers = [
         { name: "Pablo Bomb", phone: "123456", isGold: true },
         { name: "Zio Tom", phone: "098765" },
-        { name: "Peter Zum", phone: "000001" },
+        { name: "Peter Zum", phone: "00001" },
         { name: "Tom The Hero", phone: "112301", isGold: true },
-    ]);
+    ];
 
+    const result = await Customer.collection.insertMany(customers);
     return result.insertedIds;
 };
 
