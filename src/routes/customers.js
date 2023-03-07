@@ -67,7 +67,8 @@ router.put("/:id", [auth, admin, objectId, validate(validateCustomerUpdate)], as
 
         if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
 
-        res.send(customer);
+        const customerRes = { id: customer._id, name: customer.name, phone: customer.phone, isGold: customer.isGold };
+        res.send(customerRes);
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);
@@ -81,7 +82,7 @@ router.delete("/:id", [auth, admin, objectId], async (req, res) => {
 
         if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
 
-        res.send(customer._id);
+        res.send();
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);

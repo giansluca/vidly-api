@@ -1,48 +1,62 @@
 const request = require("supertest");
+const mongoose = require("mongoose");
 const { Genre } = require("../../src/models/genre");
 const { User } = require("../../src/models/user");
 
-describe.skip("auth middleware", () => {
-    let server;
+let server;
 
-    beforeEach(async () => {
-        server = await require("../../index");
-    });
+beforeAll(async () => {
+    server = await require("../../index");
+});
 
-    afterEach(async () => {
-        await server.close();
-        await Genre.deleteMany({});
-    });
+afterAll(async () => {
+    await Genre.deleteMany({});
+    await mongoose.disconnect();
+    await server.close();
+});
 
-    let token;
-
-    const exec = () => {
-        return request(server).post("/api/genres").set("Authorization", token).send({ name: "genre1" });
-    };
-
-    beforeEach(() => {
-        token = new User().generateAuthToken();
-    });
-
+describe("auth middleware", () => {
     it("should return 401 if no token is provided", async () => {
-        token = "";
+        // Given
+        const jwtToken = null;
 
-        const res = await exec();
+        // When
+        const res = await request(server).post("/api/genres").send({ name: "new-genre" });
 
+        // Then
         expect(res.status).toBe(401);
     });
 
     it("should return 400 if token is invalid", async () => {
-        token = "a";
+        // Given
+        const jwtToken = "A";
 
-        const res = await exec();
+        // When
+        const res = await request(server)
+            .post("/api/genres")
+            .set("Authorization", jwtToken)
+            .send({ name: "new-genre" });
 
+        // Then
         expect(res.status).toBe(400);
     });
 
     it("should return 200 if token is valid", async () => {
-        const res = await exec();
+        // Given
+        const jwtToken = new User({
+            name: "name",
+            email: "email",
+            password: "password",
+            isAdmin: true,
+        }).generateAuthToken();
 
+        // When
+        const res = await request(server)
+            .post("/api/genres")
+            .set("Authorization", jwtToken)
+            .send({ name: "new-genre" });
+
+        // Then
         expect(res.status).toBe(200);
     });
 });

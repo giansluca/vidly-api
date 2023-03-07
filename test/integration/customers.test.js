@@ -69,7 +69,7 @@ describe("/api/customers", () => {
         });
     });
 
-    describe("POST /:id", () => {
+    describe("POST /", () => {
         it("should save new customer", async () => {
             // Given
             const newCustomer = {
