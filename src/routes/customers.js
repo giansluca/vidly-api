@@ -3,9 +3,10 @@ const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const validate = require("../middleware/validate");
 const objectId = require("../middleware/objectId");
-const { Customer, validateCustomer } = require("../models/customer");
+const { Customer, validateCustomerNew, validateCustomerUpdate } = require("../models/customer");
 const express = require("express");
 const router = express.Router();
+const _ = require("lodash");
 
 router.get("/", [auth], async (req, res) => {
     try {
@@ -35,7 +36,7 @@ router.get("/:id", [auth, objectId], async (req, res) => {
     }
 });
 
-router.post("/", [auth, admin, validate(validateCustomer)], async (req, res) => {
+router.post("/", [auth, admin, validate(validateCustomerNew)], async (req, res) => {
     try {
         const customer = new Customer({
             name: req.body.name,
@@ -51,7 +52,7 @@ router.post("/", [auth, admin, validate(validateCustomer)], async (req, res) => 
     }
 });
 
-router.put("/:id", [auth, admin, validate(validateCustomer)], async (req, res) => {
+router.put("/:id", [auth, admin, objectId, validate(validateCustomerUpdate)], async (req, res) => {
     try {
         const id = req.params.id;
         const customer = await Customer.findByIdAndUpdate(
@@ -73,13 +74,18 @@ router.put("/:id", [auth, admin, validate(validateCustomer)], async (req, res) =
     }
 });
 
-router.delete("/:id", [auth, admin], async (req, res) => {
-    const id = req.params.id;
-    const customer = await Customer.findByIdAndRemove(id);
+router.delete("/:id", [auth, admin, objectId], async (req, res) => {
+    try {
+        const id = req.params.id;
+        const customer = await Customer.findByIdAndRemove(id);
 
-    if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
+        if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
 
-    res.send(customer);
+        res.send(customer);
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send(err);
+    }
 });
 
 module.exports = router;

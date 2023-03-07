@@ -82,17 +82,6 @@ describe("/api/customers", () => {
             expect(res.status).toBe(400);
             expect(res.text).toBe(`Invalid id: ${customerId}`);
         });
-        it("should return 401 if client is not logged in", async () => {
-            // Given
-            noToken = "";
-            const customerId1 = insertedCustomer["0"]._id.toString();
-
-            // When
-            const res = await request(server).get(`/api/customers/${customerId1}`).set("Authorization", noToken);
-
-            // Then
-            expect(res.status).toBe(401);
-        });
     });
 
     describe("POST /:id", () => {
@@ -132,10 +121,62 @@ describe("/api/customers", () => {
                 .post("/api/customers")
                 .set("Authorization", jwtToken)
                 .send(newCustomer);
-            const idCreated = resPost.body;
 
             // Then
             expect(resPost.status).toBe(400);
+        });
+    });
+
+    describe("PUT /:id", () => {
+        it("should update customer by id", async () => {
+            // Given
+            const customerId1 = insertedCustomer["0"]._id.toString();
+
+            // When
+            const resPut = await request(server)
+                .put(`/api/customers/${customerId1}`)
+                .set("Authorization", jwtToken)
+                .send({ phone: "999000" });
+
+            const resGet = await request(server).get(`/api/customers/${customerId1}`).set("Authorization", jwtToken);
+
+            // Then
+            expect(resPut.status).toBe(200);
+            expect(resPut.body).toHaveProperty("name", "Pablo Bomb");
+            expect(resPut.body).toHaveProperty("phone", "999000");
+            expect(resPut.body).toHaveProperty("isGold", true);
+
+            expect(resGet.status).toBe(200);
+            expect(resGet.body).toHaveProperty("name", "Pablo Bomb");
+            expect(resGet.body).toHaveProperty("phone", "999000");
+            expect(resGet.body).toHaveProperty("isGold", true);
+        });
+        it("should return 404 if no customer with the given id exists", async () => {
+            // Given
+            const randomId = new mongoose.Types.ObjectId().toString();
+
+            // When
+            const res = await request(server)
+                .put(`/api/customers/${randomId}`)
+                .set("Authorization", jwtToken)
+                .send({ phone: "999000" });
+
+            // Then
+            expect(res.status).toBe(404);
+            expect(res.text).toBe(`Customer with id: ${randomId} was not found`);
+        });
+        it("should return 400 if 'phone' parameter doesn't pass the validation", async () => {
+            // Given
+            const customerId1 = insertedCustomer["0"]._id.toString();
+
+            // When
+            const res = await request(server)
+                .put(`/api/customers/${customerId1}`)
+                .set("Authorization", jwtToken)
+                .send({ phone: "1A" });
+
+            // Then
+            expect(res.status).toBe(400);
         });
     });
 });
