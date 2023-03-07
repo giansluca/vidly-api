@@ -81,7 +81,7 @@ router.delete("/:id", [auth, admin, objectId], async (req, res) => {
 
         if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
 
-        res.send(customer);
+        res.send(customer._id);
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);

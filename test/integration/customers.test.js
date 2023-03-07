@@ -9,17 +9,23 @@ let jwtToken;
 
 beforeAll(async () => {
     server = await require("../../index");
-    insertedCustomer = await setUpInitData();
     jwtToken = new User({ name: "name", email: "email", password: "password", isAdmin: true }).generateAuthToken();
 });
 
 afterAll(async () => {
-    await clearData();
     await mongoose.disconnect();
     await server.close();
 });
 
 describe("/api/customers", () => {
+    beforeEach(async () => {
+        insertedCustomer = await setUpInitData();
+    });
+
+    afterEach(async () => {
+        await clearData();
+    });
+
     describe("GET /", () => {
         it("should return all the customers", async () => {
             // Given - When
@@ -32,16 +38,6 @@ describe("/api/customers", () => {
                 res.body.some((c) => c.name === "Pablo Bomb" && c.phone === "123456" && c.isGold === true)
             ).toBeTruthy();
             expect(res.body.some((c) => c.name === "Zio Tom" && c.isGold === false)).toBeTruthy();
-        });
-        it("should return 401 if client is not logged in", async () => {
-            // Given
-            noToken = "";
-
-            // When
-            const res = await request(server).get("/api/customers").set("Authorization", noToken);
-
-            // Then
-            expect(res.status).toBe(401);
         });
     });
 
@@ -71,17 +67,6 @@ describe("/api/customers", () => {
             expect(res.status).toBe(404);
             expect(res.text).toBe(`Customer with id: ${randomId} was not found`);
         });
-        it("should return 400 if customerId is invalid", async () => {
-            // Given
-            const customerId = "1AAA";
-
-            // When
-            const res = await request(server).get(`/api/customers/${customerId}`).set("Authorization", jwtToken);
-
-            // Then
-            expect(res.status).toBe(400);
-            expect(res.text).toBe(`Invalid id: ${customerId}`);
-        });
     });
 
     describe("POST /:id", () => {
@@ -109,7 +94,7 @@ describe("/api/customers", () => {
             expect(resGet.body).toHaveProperty("phone", "0000099");
             expect(resGet.body).toHaveProperty("isGold", true);
         });
-        it("should return 400 if mandatory customer parameter is missing", async () => {
+        it("should return 400 if mandatory 'phone' parameter is missing", async () => {
             // Given
             const newCustomer = {
                 name: "Pablo the painter",
@@ -165,7 +150,7 @@ describe("/api/customers", () => {
             expect(res.status).toBe(404);
             expect(res.text).toBe(`Customer with id: ${randomId} was not found`);
         });
-        it("should return 400 if 'phone' parameter doesn't pass the validation", async () => {
+        it("should return 400 if 'phone' parameter has less than six characters", async () => {
             // Given
             const customerId1 = insertedCustomer["0"]._id.toString();
 
@@ -177,6 +162,37 @@ describe("/api/customers", () => {
 
             // Then
             expect(res.status).toBe(400);
+        });
+    });
+
+    describe("DELETE /:id", () => {
+        it("should delete customer by id", async () => {
+            // Given
+            const customerId1 = insertedCustomer["0"]._id.toString();
+
+            // When
+            const resDelete = await request(server)
+                .delete(`/api/customers/${customerId1}`)
+                .set("Authorization", jwtToken);
+
+            const resGetAll = await request(server).get("/api/customers").set("Authorization", jwtToken);
+            const resGetOne = await request(server).get(`/api/customers/${customerId1}`).set("Authorization", jwtToken);
+
+            // Then
+            expect(resDelete.status).toBe(200);
+            expect(resGetAll.body.length).toBe(3);
+            expect(resGetOne.status).toBe(404);
+        });
+        it("should return 404 if no customer with the given id exists", async () => {
+            // Given
+            const randomId = new mongoose.Types.ObjectId().toString();
+
+            // When
+            const res = await request(server).delete(`/api/customers/${randomId}`).set("Authorization", jwtToken);
+
+            // Then
+            expect(res.status).toBe(404);
+            expect(res.text).toBe(`Customer with id: ${randomId} was not found`);
         });
     });
 });

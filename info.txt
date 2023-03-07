@@ -1,5 +1,5 @@
 
-mongooge schema validation
+request validations separation new/update
 bearer + expiration time 
 use auth check on all api
 api test : customers - users - auth
