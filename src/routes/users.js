@@ -50,7 +50,6 @@ router.post("/login", async (req, res) => {
 
         const token = user.generateAuthToken();
         res.header("Authorization", token).send();
-        //res.send(token);
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);

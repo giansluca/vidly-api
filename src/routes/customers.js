@@ -12,10 +12,7 @@ router.get("/", [auth], async (req, res) => {
     try {
         const customers = await Customer.find().sort("name");
 
-        customerListRes = customers.map((c) => {
-            return { id: c._id, name: c.name, phone: c.phone, isGold: c.isGold };
-        });
-        res.send(customerListRes);
+        res.send(customers.map((c) => c.toApiRes()));
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);
@@ -28,8 +25,7 @@ router.get("/:id", [auth, objectId], async (req, res) => {
         const customer = await Customer.findById(id);
         if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
 
-        const customerRes = { id: customer._id, name: customer.name, phone: customer.phone, isGold: customer.isGold };
-        res.send(customerRes);
+        res.send(customer.toApiRes());
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);
@@ -67,8 +63,7 @@ router.put("/:id", [auth, admin, objectId, validate(validateCustomerUpdate)], as
 
         if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
 
-        const customerRes = { id: customer._id, name: customer.name, phone: customer.phone, isGold: customer.isGold };
-        res.send(customerRes);
+        res.send(customer.toApiRes());
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);

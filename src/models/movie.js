@@ -28,9 +28,19 @@ const movieSchema = new mongoose.Schema({
     },
 });
 
+movieSchema.methods.toApiRes = function () {
+    return {
+        id: this._id,
+        title: this.title,
+        genre: this.genre.toApiRes(),
+        numberInStock: this.numberInStock,
+        dailyRentalRate: this.dailyRentalRate,
+    };
+};
+
 const Movie = mongoose.model("Movie", movieSchema);
 
-function validateMovie(movie) {
+function validateMovieNew(movie) {
     const schema = Joi.object({
         title: Joi.string().min(6).max(256).required(),
         genreId: Joi.required(),
@@ -41,6 +51,17 @@ function validateMovie(movie) {
     return schema.validate(movie);
 }
 
+function validateMovieUpdate(movie) {
+    const schema = Joi.object({
+        title: Joi.string().min(6).max(256),
+        numberInStock: Joi.number().min(0).max(1024),
+        dailyRentalRate: Joi.number().min(0).max(256),
+    });
+
+    return schema.validate(movie);
+}
+
 exports.movieSchema = movieSchema;
 exports.Movie = Movie;
-exports.validateMovie = validateMovie;
+exports.validateMovieNew = validateMovieNew;
+exports.validateMovieUpdate = validateMovieUpdate;

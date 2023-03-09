@@ -7,41 +7,70 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", [auth], async (req, res) => {
-    const genres = await Genre.find().sort("name");
-    res.send(genres);
+    try {
+        const genres = await Genre.find().sort("name");
+
+        res.send(genres.map((g) => g.toApiRes()));
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send(err);
+    }
 });
 
 router.get("/:id", [auth, objectId], async (req, res) => {
-    const genre = await Genre.findById(req.params.id);
+    try {
+        const id = req.params.id;
+        const genre = await Genre.findById(id);
 
-    if (!genre) return res.status(404).send("The genre with the given ID was not found");
+        if (!genre) return res.status(404).send(`Genre with id: ${id} was not found`);
 
-    res.send(genre);
+        res.send(genre.toApiRes());
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send(err);
+    }
 });
 
 router.post("/", [auth, admin, validate(validateGenreNew)], async (req, res) => {
-    const genre = new Genre({
-        name: req.body.name,
-    });
+    try {
+        const genre = new Genre({
+            name: req.body.name,
+        });
 
-    await genre.save();
-    res.send(genre);
+        await genre.save();
+        res.status(201).send(genre._id);
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send(err);
+    }
 });
 
 router.put("/:id", [auth, admin, objectId, validate(validateGenreUpdate)], async (req, res) => {
-    const genre = await Genre.findByIdAndUpdate(req.params.id, { name: req.body.name }, { new: true });
+    try {
+        const id = req.params.id;
+        const genre = await Genre.findByIdAndUpdate(id, { name: req.body.name }, { new: true });
 
-    if (!genre) return res.status(404).send("The genre with the given ID was not found");
+        if (!genre) return res.status(404).send(`Genre with id: ${id} was not found`);
 
-    res.send(genre);
+        res.send(genre.toApiRes());
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send(err);
+    }
 });
 
 router.delete("/:id", [auth, admin, objectId], async (req, res) => {
-    const genre = await Genre.findByIdAndRemove(req.params.id);
+    try {
+        const id = req.params.id;
+        const genre = await Genre.findByIdAndRemove(id);
 
-    if (!genre) return res.status(404).send("The genre with the given ID was not found");
+        if (!genre) return res.status(404).send(`Genre with id: ${id} was not found`);
 
-    res.send();
+        res.send();
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send(err);
+    }
 });
 
 module.exports = router;

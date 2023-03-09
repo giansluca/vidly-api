@@ -10,6 +10,13 @@ const genreSchema = new mongoose.Schema({
     },
 });
 
+genreSchema.methods.toApiRes = function () {
+    return {
+        id: this._id,
+        name: this.name,
+    };
+};
+
 const Genre = mongoose.model("Genre", genreSchema);
 
 function validateGenreNew(genre) {
