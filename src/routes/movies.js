@@ -44,10 +44,7 @@ router.post("/", [auth, admin, validate(validateMovieNew)], async (req, res) => 
 
         const movie = new Movie({
             title: req.body.title,
-            genre: {
-                _id: genre._id,
-                name: genre.name,
-            },
+            genre: genre.toApiReq(),
             numberInStock: req.body.numberInStock,
             dailyRentalRate: req.body.dailyRentalRate,
         });
@@ -62,21 +59,22 @@ router.post("/", [auth, admin, validate(validateMovieNew)], async (req, res) => 
 
 router.put("/:id", [auth, admin, objectId, validate(validateMovieUpdate)], async (req, res) => {
     try {
-        const isValidGenreId = mongoose.isValidObjectId(genreId);
-        if (!isValidGenreId) return res.status(400).send(`Invalid genreId: ${genreId}`);
+        let genre;
+        const genreId = req.body.genreId;
+        if (genreId) {
+            const isValidGenreId = mongoose.isValidObjectId(genreId);
+            if (!isValidGenreId) return res.status(400).send(`Invalid genreId: ${genreId}`);
 
-        const genre = await Genre.findById(req.body.genreId);
-        if (!genre) return res.status(404).send("Invalid genre");
+            genre = await Genre.findById(req.body.genreId);
+            if (!genre) return res.status(404).send("Invalid genre");
+        }
 
         const id = req.params.id;
         const movie = await Movie.findByIdAndUpdate(
             id,
             {
                 title: req.body.title,
-                genre: {
-                    _id: genre._id,
-                    name: genre.name,
-                },
+                genre: genre != undefined ? genre.toApiReq() : genre,
                 numberInStock: req.body.numberInStock,
                 dailyRentalRate: req.body.dailyRentalRate,
             },
@@ -85,7 +83,7 @@ router.put("/:id", [auth, admin, objectId, validate(validateMovieUpdate)], async
 
         if (!movie) return res.status(404).send(`Movie with id: ${id} was not found`);
 
-        res.send(movie);
+        res.send(movie.toApiRes());
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);

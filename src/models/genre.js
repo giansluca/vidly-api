@@ -17,6 +17,13 @@ genreSchema.methods.toApiRes = function () {
     };
 };
 
+genreSchema.methods.toApiReq = function () {
+    return {
+        _id: this._id,
+        name: this.name,
+    };
+};
+
 const Genre = mongoose.model("Genre", genreSchema);
 
 function validateGenreNew(genre) {
