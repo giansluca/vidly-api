@@ -4,15 +4,15 @@ const admin = require("../middleware/admin");
 const validate = require("../middleware/validate");
 const objectId = require("../middleware/objectId");
 const { Customer, validateCustomerNew, validateCustomerUpdate } = require("../models/customer");
+const customerService = require("../service/customerService");
 const express = require("express");
 const router = express.Router();
 const _ = require("lodash");
 
 router.get("/", [auth], async (req, res) => {
     try {
-        const customers = await Customer.find().sort("name");
-
-        res.send(customers.map((c) => c.toApiRes()));
+        const customers = await customerService.getAllCustomers();
+        res.send(customers);
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);
@@ -22,10 +22,10 @@ router.get("/", [auth], async (req, res) => {
 router.get("/:id", [auth, objectId], async (req, res) => {
     try {
         const id = req.params.id;
-        const customer = await Customer.findById(id);
+        const customer = await customerService.getCustomerById(id);
         if (!customer) return res.status(404).send(`Customer with id: ${id} was not found`);
 
-        res.send(customer.toApiRes());
+        res.send(customer);
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);
@@ -34,14 +34,8 @@ router.get("/:id", [auth, objectId], async (req, res) => {
 
 router.post("/", [auth, admin, validate(validateCustomerNew)], async (req, res) => {
     try {
-        const customer = new Customer({
-            name: req.body.name,
-            phone: req.body.phone,
-            isGold: req.body.isGold,
-        });
-
-        await customer.save();
-        res.status(201).send(customer._id);
+        const id = await customerService.addNewCustomer(req.body);
+        res.status(201).send(id);
     } catch (err) {
         logger.error(err);
         res.status(500).send(err);
