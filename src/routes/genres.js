@@ -13,7 +13,7 @@ router.get("/", [auth], async (req, res) => {
         res.send(genres.map((g) => g.toApiRes()));
     } catch (err) {
         logger.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 
@@ -27,7 +27,7 @@ router.get("/:id", [auth, objectId], async (req, res) => {
         res.send(genre.toApiRes());
     } catch (err) {
         logger.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 
@@ -41,7 +41,7 @@ router.post("/", [auth, admin, validate(validateGenreNew)], async (req, res) => 
         res.status(201).send(genre._id);
     } catch (err) {
         logger.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 
@@ -55,7 +55,7 @@ router.put("/:id", [auth, admin, objectId, validate(validateGenreUpdate)], async
         res.send(genre.toApiRes());
     } catch (err) {
         logger.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 
@@ -69,7 +69,7 @@ router.delete("/:id", [auth, admin, objectId], async (req, res) => {
         res.send();
     } catch (err) {
         logger.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 

@@ -15,7 +15,7 @@ router.get("/", [auth], async (req, res) => {
         res.send(movies.map((m) => m.toApiRes()));
     } catch (err) {
         logger.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 
@@ -29,7 +29,7 @@ router.get("/:id", [auth, objectId], async (req, res) => {
         res.send(movie.toApiRes());
     } catch (err) {
         logger.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 
@@ -53,7 +53,7 @@ router.post("/", [auth, admin, validate(validateMovieNew)], async (req, res) => 
         res.status(201).send(movie._id);
     } catch (err) {
         logger.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 
@@ -86,7 +86,7 @@ router.put("/:id", [auth, admin, objectId, validate(validateMovieUpdate)], async
         res.send(movie.toApiRes());
     } catch (err) {
         logger.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 
@@ -100,7 +100,7 @@ router.delete("/:id", [auth, admin, objectId], async (req, res) => {
         res.send();
     } catch (err) {
         logger.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     }
 });
 

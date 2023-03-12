@@ -23,5 +23,6 @@ describe("auth", () => {
 
         // Then
         expect(req.user).toMatchObject(user);
+        console.log(bearerToken);
     });
 });
