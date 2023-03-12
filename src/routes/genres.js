@@ -1,3 +1,4 @@
+const { logger } = require("../startup/logger");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const validate = require("../middleware/validate");
