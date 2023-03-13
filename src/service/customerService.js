@@ -1,5 +1,5 @@
-const { Customer } = require("../models/customer");
-const { ApiError } = require("../errors/apiError");
+const { Customer } = require("../model/customer");
+const { ApiError } = require("../error/apiError");
 
 async function getAllCustomers() {
     const customers = await Customer.find().sort("name");

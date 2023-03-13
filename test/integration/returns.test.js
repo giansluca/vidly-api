@@ -1,6 +1,6 @@
-const { Rental } = require("../../src/models/rental");
-const { User } = require("../../src/models/user");
-const { Movie } = require("../../src/models/movie");
+const { Rental } = require("../../src/model/rental");
+const { User } = require("../../src/model/user");
+const { Movie } = require("../../src/model/movie");
 const moment = require("moment");
 const mongoose = require("mongoose");
 const request = require("supertest");

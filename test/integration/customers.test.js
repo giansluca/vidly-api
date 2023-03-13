@@ -1,7 +1,7 @@
 const request = require("supertest");
 const mongoose = require("mongoose");
-const { Customer } = require("../../src/models/customer");
-const { User } = require("../../src/models/user");
+const { Customer } = require("../../src/model/customer");
+const { User } = require("../../src/model/user");
 
 let server;
 let insertedCustomer;

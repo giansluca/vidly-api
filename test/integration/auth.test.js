@@ -1,7 +1,7 @@
 const request = require("supertest");
 const mongoose = require("mongoose");
-const { Genre } = require("../../src/models/genre");
-const { User } = require("../../src/models/user");
+const { Genre } = require("../../src/model/genre");
+const { User } = require("../../src/model/user");
 
 let server;
 

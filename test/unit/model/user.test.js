@@ -1,5 +1,5 @@
 const config = require("../../../src/startup/config");
-const { User } = require("../../../src/models/user");
+const { User } = require("../../../src/model/user");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 

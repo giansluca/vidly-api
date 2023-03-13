@@ -1,9 +1,9 @@
-const genresRouter = require("../routes/genres");
-const moviesRouter = require("../routes/movies");
-const customersRouter = require("../routes/customers");
-const rentalsRouter = require("../routes/rentals");
-const usersRouter = require("../routes/users");
-const returnsRouter = require("../routes/returns");
+const genresRouter = require("../route/genres");
+const moviesRouter = require("../route/movies");
+const customersRouter = require("../route/customers");
+const rentalsRouter = require("../route/rentals");
+const usersRouter = require("../route/users");
+const returnsRouter = require("../route/returns");
 
 module.exports = function (app) {
     app.use("/api/genres", genresRouter);

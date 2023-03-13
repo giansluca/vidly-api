@@ -1,8 +1,7 @@
-const { Rental } = require("../models/rental");
-const { Movie } = require("../models/movie");
+const { Rental } = require("../model/rental");
+const { Movie } = require("../model/movie");
 const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
-const mongoose = require("mongoose");
 const Joi = require("joi");
 const express = require("express");
 const router = express.Router();

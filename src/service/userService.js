@@ -1,5 +1,5 @@
-const { User } = require("../models/user");
-const { ApiError } = require("../errors/apiError");
+const { User } = require("../model/user");
+const { ApiError } = require("../error/apiError");
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
 
