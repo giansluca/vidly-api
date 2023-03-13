@@ -17,10 +17,7 @@ afterAll(async () => {
 
 describe("auth middleware", () => {
     it("should return 401 if no token is provided", async () => {
-        // Given
-        const jwtToken = null;
-
-        // When
+        // Given - When
         const res = await request(server).post("/api/genres").send({ name: "new-genre" });
 
         // Then

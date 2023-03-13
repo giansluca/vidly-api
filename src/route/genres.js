@@ -4,7 +4,7 @@ const admin = require("../middleware/admin");
 const validate = require("../middleware/validate");
 const objectId = require("../middleware/objectId");
 const genreService = require("../service/genreService");
-const { Genre, validateGenreNew, validateGenreUpdate } = require("../model/genre");
+const { validateGenreNew, validateGenreUpdate } = require("../model/genre");
 const express = require("express");
 const router = express.Router();
 
