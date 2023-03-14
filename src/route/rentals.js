@@ -4,6 +4,7 @@ const validate = require("../middleware/validate");
 const { Rental, validateRentalNew } = require("../model/rental");
 const { Movie } = require("../model/movie");
 const { Customer } = require("../model/customer");
+const rentalService = require("../service/rentalService");
 const express = require("express");
 const router = express.Router();
 
