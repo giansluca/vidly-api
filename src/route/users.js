@@ -3,7 +3,7 @@ const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const objectId = require("../middleware/objectId");
 const validate = require("../middleware/validate");
-const { validateUser } = require("../model/user");
+const { validateUserNew } = require("../model/user");
 const userService = require("../service/userService");
 const express = require("express");
 const router = express.Router();
@@ -23,7 +23,7 @@ router.get("/:id", [auth, admin, objectId], async (req, res) => {
     }
 });
 
-router.post("/", [auth, admin, validate(validateUser)], async (req, res) => {
+router.post("/", [auth, admin, validate(validateUserNew)], async (req, res) => {
     try {
         const user = await userService.createUser(req.body);
         res.send(_.pick(user, ["name", "email", "isAdmin", "_id"]));

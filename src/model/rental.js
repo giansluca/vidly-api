@@ -72,7 +72,7 @@ rentalSchema.methods.return = function () {
 
 const Rental = mongoose.model("Rental", rentalSchema);
 
-function validateRental(rental) {
+function validateRentalNew(rental) {
     const schema = Joi.object({
         customerId: Joi.required(),
         movieId: Joi.required(),
@@ -82,4 +82,4 @@ function validateRental(rental) {
 }
 
 exports.Rental = Rental;
-exports.validateRental = validateRental;
+exports.validateRentalNew = validateRentalNew;
