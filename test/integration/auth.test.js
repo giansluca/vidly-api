@@ -24,7 +24,7 @@ describe("auth middleware", () => {
         expect(res.status).toBe(401);
     });
 
-    it("should return 400 if token is invalid", async () => {
+    it("should return 401 if token is invalid", async () => {
         // Given
         const jwtToken = "A";
 
@@ -35,7 +35,7 @@ describe("auth middleware", () => {
             .send({ name: "new-genre" });
 
         // Then
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(401);
     });
 
     it("should return 201 if token is valid", async () => {

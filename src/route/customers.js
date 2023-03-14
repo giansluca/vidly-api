@@ -1,8 +1,8 @@
 const { logger } = require("../startup/logger");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
-const objectId = require("../middleware/objectId");
 const validate = require("../middleware/validate");
+const objectId = require("../middleware/objectId");
 const { validateCustomerNew, validateCustomerUpdate } = require("../model/customer");
 const customerService = require("../service/customerService");
 const express = require("express");

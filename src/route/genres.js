@@ -3,8 +3,8 @@ const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const validate = require("../middleware/validate");
 const objectId = require("../middleware/objectId");
-const genreService = require("../service/genreService");
 const { validateGenreNew, validateGenreUpdate } = require("../model/genre");
+const genreService = require("../service/genreService");
 const express = require("express");
 const router = express.Router();
 
