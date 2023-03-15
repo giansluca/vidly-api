@@ -45,7 +45,11 @@ const rentalSchema = new mongoose.Schema({
     dateOut: {
         type: Date,
         required: true,
-        default: Date.now,
+    },
+    status: {
+        type: String,
+        enum: ["OUT", "RETURNED"],
+        required: true,
     },
     dateReturned: {
         type: Date,
@@ -68,6 +72,28 @@ rentalSchema.methods.return = function () {
 
     const rentalDays = moment().diff(this.dateOut, "days");
     this.rentalFee = rentalDays * this.movie.dailyRentalRate;
+};
+
+rentalSchema.methods.toApiRes = function () {
+    return {
+        id: this._id,
+        customer: {
+            id: this.customer._id,
+            name: this.customer.name,
+            phone: this.customer.phone,
+            isGold: this.customer.isGold,
+        },
+        movie: {
+            id: this.movie._id,
+            title: this.movie.title,
+            numberInStock: this.movie.numberInStock,
+            dailyRentalRate: this.movie.dailyRentalRate,
+        },
+        dateOut: this.dateOut,
+        status: this.status,
+        dateReturned: this.dateReturned,
+        rentalFee: this.rentalFee,
+    };
 };
 
 const Rental = mongoose.model("Rental", rentalSchema);

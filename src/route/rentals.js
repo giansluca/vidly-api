@@ -1,16 +1,16 @@
 const { logger } = require("../startup/logger");
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const validate = require("../middleware/validate");
-const { Rental, validateRentalNew } = require("../model/rental");
-const { Movie } = require("../model/movie");
-const { Customer } = require("../model/customer");
+const objectId = require("../middleware/objectId");
+const { validateRentalNew } = require("../model/rental");
 const rentalService = require("../service/rentalService");
 const express = require("express");
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", [auth], async (req, res) => {
     try {
-        const rentals = await Rental.find().sort("-dateOut");
+        const rentals = await rentalService.getAllRentals();
         res.send(rentals);
     } catch (err) {
         if (err.name === "ApiError") {
@@ -22,12 +22,9 @@ router.get("/", async (req, res) => {
     }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", [auth, objectId], async (req, res) => {
     try {
-        const rental = await Rental.findById(req.params.id);
-
-        if (!rental) return res.status(404).send("The rental with the given ID was not found.");
-
+        const rental = await rentalService.getRentalById(req.params.id);
         res.send(rental);
     } catch (err) {
         if (err.name === "ApiError") {
@@ -39,42 +36,9 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-router.post("/", [auth, validate(validateRentalNew)], async (req, res) => {
+router.post("/", [auth, admin, validate(validateRentalNew)], async (req, res) => {
     try {
-        const customer = await Customer.findById(req.body.customerId);
-        if (!customer) return res.status(400).send("Invalid customer.");
-
-        const movie = await Movie.findById(req.body.movieId);
-        if (!movie) return res.status(400).send("Invalid movie.");
-
-        if (movie.numberInStock === 0) return res.status(400).send("Movie not in stock.");
-
-        const rental = new Rental({
-            customer: {
-                _id: customer._id,
-                name: customer.name,
-                phone: customer.phone,
-            },
-            movie: {
-                _id: movie._id,
-                title: movie.title,
-                dailyRentalRate: movie.dailyRentalRate,
-            },
-        });
-
-        await rental.save((err) => {
-            if (err) return res.status(400).send(`Rental validation failed...\n${err}...`);
-        });
-        movie.numberInStock--;
-
-        await movie.save((err) => {
-            if (err) {
-                const message = `Movie validation failed...\n${err}...\n`;
-                return res.status(400).send(`${message} Rental canceled...`);
-            }
-            return res.status(200).send(rental);
-        });
-
+        const rental = await rentalService.createRental(req.body);
         res.send(rental);
     } catch (err) {
         if (err.name === "ApiError") {

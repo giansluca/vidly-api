@@ -21,7 +21,7 @@ async function addNewMovie(bodyReq) {
     if (!isValidGenreId) throw new ApiError(`Invalid genreId: ${genreId}`, 400);
 
     const genre = await Genre.findById(genreId);
-    if (!genre) throw new ApiError(`Genre with id ${genreId} not found`, 404);
+    if (!genre) throw new ApiError(`Genre ${genreId} not found`, 404);
 
     const movie = new Movie({
         title: bodyReq.title,
