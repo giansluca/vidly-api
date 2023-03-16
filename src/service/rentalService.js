@@ -30,7 +30,7 @@ async function createRental({ customerId, movieId }) {
     if (movie.numberInStock === 0) throw new ApiError(`Movie not in stock`, 400);
 
     const rentalOut = await Rental.lookup(customerId, movieId);
-    if (rentalOut) throw new ApiError(`Rental ${rentalOut._id} already out`, 400);
+    if (rentalOut && rentalOut.status === "OUT") throw new ApiError(`Rental ${rentalOut._id} already out`, 400);
 
     const rental = new Rental({
         customer: {

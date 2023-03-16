@@ -1,30 +1,29 @@
-const { Rental } = require("../model/rental");
-const { Movie } = require("../model/movie");
+const { logger } = require("../startup/logger");
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const validate = require("../middleware/validate");
+const returnService = require("../service/returnService");
 const Joi = require("joi");
 const express = require("express");
 const router = express.Router();
 
-router.post("/", [auth, validate(validateReturn)], async (req, res) => {
-    const rental = await Rental.lookup(req.body.customerId, req.body.movieId);
-
-    if (!rental) return res.status(404).send("Rental not found.");
-
-    if (rental.dateReturned) return res.status(400).send("Return already processed.");
-
-    rental.return();
-
-    await rental.save();
-    await Movie.updateOne({ _id: rental.movie._id }, { $inc: { numberInStock: 1 } });
-
-    return res.send(rental);
+router.post("/", [auth, admin, validate(validateReturn)], async (req, res) => {
+    try {
+        const rental = await returnService.doReturn(req.body.rentalId);
+        return res.send(rental);
+    } catch (err) {
+        if (err.name === "ApiError") {
+            res.status(err.statusCode).send(err.message);
+        } else {
+            logger.error(err);
+            res.status(500).send(err.message);
+        }
+    }
 });
 
 function validateReturn(req) {
     const schema = Joi.object({
-        customerId: Joi.required(),
-        movieId: Joi.required(),
+        rentalId: Joi.required(),
     });
 
     return schema.validate(req);
