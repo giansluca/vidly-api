@@ -1,8 +1,0 @@
-
-unit test
-request validations separation new/update
-use auth check on all api
-
-docker run --name mongo-1 --network=my-network --hostname=mymongo -d -p 27017:27017 mongo:6.0.4 --replSet rs0
-
-mongo transaction
