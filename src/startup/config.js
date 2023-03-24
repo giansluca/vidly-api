@@ -8,7 +8,7 @@ const pkg = require("../../package");
 const config = {
     env: process.env.ENV || "local",
     app: {
-        name: process.env.APP_NAME || "Vidly-api",
+        name: process.env.APP_NAME || "vidly-api",
         version: pkg.version,
         commit: process.env.APP_COMMIT,
     },
