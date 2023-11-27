@@ -53,7 +53,7 @@ async function updateMovie(id, bodyReq) {
             numberInStock: bodyReq.numberInStock,
             dailyRentalRate: bodyReq.dailyRentalRate,
         },
-        { new: true }
+        { new: true },
     );
     if (!movie) throw new ApiError(`Movie with id: ${id} was not found`, 404);
 
@@ -61,7 +61,7 @@ async function updateMovie(id, bodyReq) {
 }
 
 async function deleteMovie(id) {
-    const movie = await Movie.findByIdAndRemove(id);
+    const movie = await Movie.findByIdAndDelete(id);
     if (!movie) throw new ApiError(`Movie with id: ${id} was not found`, 404);
 }
 

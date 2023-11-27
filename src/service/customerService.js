@@ -32,7 +32,7 @@ async function updateCustomer(id, bodyReq) {
             phone: bodyReq.phone,
             isGold: bodyReq.isGold,
         },
-        { new: true }
+        { new: true },
     );
     if (!customer) throw new ApiError(`Customer with id: ${id} was not found`, 404);
 
@@ -40,7 +40,7 @@ async function updateCustomer(id, bodyReq) {
 }
 
 async function deleteCustomer(id) {
-    const customer = await Customer.findByIdAndRemove(id);
+    const customer = await Customer.findByIdAndDelete(id);
     if (!customer) throw new ApiError(`Customer with id: ${id} was not found`, 404);
 }
 

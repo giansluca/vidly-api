@@ -30,7 +30,7 @@ async function updateGenre(id, bodyReq) {
 }
 
 async function deleteGenre(id) {
-    const genre = await Genre.findByIdAndRemove(id);
+    const genre = await Genre.findByIdAndDelete(id);
     if (!genre) throw new ApiError(`Genre with id: ${id} was not found`, 404);
 }
 
