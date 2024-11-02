@@ -19,7 +19,7 @@ const logFormat =
               winston.format.simple(),
               winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
               winston.format.colorize(),
-              logFormatter
+              logFormatter,
           );
 
 const console = new winston.transports.Console({
